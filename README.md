@@ -40,3 +40,9 @@
             eureka-entity       实体类
             eureka-common       通用类
             eureka-api          api接口
+            
+>扩展
+
+    现已整合 eureka, feign, ribbon, hystix, turbine, zuul 预计两周内完成spring cloud完整版 会写一个docker和springcloud分布式部署的博文
+    这个demo完全按照官方文档提供内容所写，所以简单方便理解。以后可以看看源码，自己写一些组件
+    学习交流群 qq：490382187
