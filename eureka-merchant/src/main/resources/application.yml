@@ -1,0 +1,32 @@
+
+server:
+  port: 8081
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://user:password@peer1:8761/eureka/,http://user:password@peer2:8762/eureka/
+    # 定时刷新本地缓存时间
+    registry-fetch-interval-seconds: 5
+  instance:
+    # 启动ip访问
+    prefer-ip-address: true
+    # 自定义eureka实例ip
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    # 心跳间隔，配置成5秒（默认30s）
+    lease-renewal-interval-in-seconds: 5
+    # 没有心跳淘汰时间，配置成10秒（默认90s）
+    lease-expiration-duration-in-seconds: 10
+
+spring:
+  application:
+#    name: eureka-commodity
+    name: eureka-merchant
+
+ribbon:
+  # ribbon缓存时间，配置2秒（默认30s）。可以自定义一套可随Context refresh的DiscoveryClient
+  ServerListRefreshInterval: 2000
+
+logging:
+  level:
+    root: info

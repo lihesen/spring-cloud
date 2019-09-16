@@ -1,0 +1,41 @@
+server:
+  port: 8761
+spring:
+  application:
+    name: eureka-server
+  profiles: peer1
+  # 认证
+  security:
+    user:
+      name: user
+      password: password
+eureka:
+  dataCenter: springcloud
+  environment: development
+  instance:
+    hostname: peer1
+    # 心跳间隔，配置成5秒（默认30s）
+    lease-renewal-interval-in-seconds: 5
+    # 没有心跳淘汰时间，配置成10秒（默认90s）
+    lease-expiration-duration-in-seconds: 10
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  server:
+    # 关闭自我保护模式
+    enable-self-preservation: false
+    # 主动失效检测间隔，配置成5秒
+    eviction-interval-timer-in-ms: 5000
+    # 禁用readOnlyCacheMap
+    use-read-only-response-cache: false
+  client:
+    # 禁止eureka自己注册自己
+    registerWithEureka: false
+    fetchRegistry: false
+    # 健康检查
+    healthcheck:
+      enabled: true
+    serviceUrl:
+#      defaultZone: http://user:password@peer2:8762/eureka/
+      defaultZone: http://user:password@peer1:8761/eureka/
+  dashboard:
+    enabled: true
+    path: /home

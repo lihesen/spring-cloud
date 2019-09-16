@@ -1,0 +1,94 @@
+server:
+  port: 8080
+
+management:
+  endpoint:
+    health:
+      # 健康指标 as of Spring Boot 2.1.x and cloud release train Greenwich.RELEASE
+      # https://stackoverflow.com/questions/48704018/hystrix-status-is-not-exposed-under-health
+      # /health
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        # Hystrix指标流 2.1.x之后配置
+        # /hystrix.stream
+        include: health,info,hystrix.stream
+      base-path: /
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://user:password@peer1:8761/eureka/ # ,http://user:password@peer2:8762/eureka/
+    # 区域，这个可以看看eureka region和zone的概念
+    region: us-east-1
+    # 定时刷新本地缓存时间
+    registry-fetch-interval-seconds: 5
+    healthcheck:
+      enabled: true
+  instance:
+    # 启动ip访问
+    prefer-ip-address: true
+    # 自定义eureka实例ip
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    # 心跳间隔，配置成5秒（默认30s）
+    lease-renewal-interval-in-seconds: 5
+    # 没有心跳淘汰时间，配置成10秒（默认90s）
+    lease-expiration-duration-in-seconds: 10
+
+spring:
+  application:
+    name: eureka-user
+
+ribbon:
+  # ribbon缓存时间，配置2秒（默认30s）。可以自定义一套可随Context refresh的DiscoveryClient
+  ServerListRefreshInterval: 2000
+
+  # 在Ribbon中禁用Eureka使用
+  #  eureka:
+  #    enabled: false
+
+  # 在Feign中禁用Hystrix
+  #feign:
+  #  hystrix:
+  #    enabled: false
+
+  # 将线程隔离设置为SEMAPHORE（使用@EnableFeignClients属性defaultConfiguration 手动创建feign，需要配置此项）
+  #hystrix:
+  #  command:
+  #    default:
+  #      execution:
+  #        isolation:
+  #          strategy: SEMAPHORE
+
+  #eureka-order:
+  #  ribbon:
+  # 自定义请求服务（需要先禁用eureka）可以用来测试某个服务
+  #    listOfServers: localhost:8091
+  # 自定义负载均衡
+#    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+
+logging:
+  level:
+    com.zhangjh.springcloud.eurekauser.feign.DefaultFeignClient: DEBUG
+
+# Feign请求/响应压缩
+feign:
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response:
+      enabled: true
+  hystrix:
+    enabled: true
+
+# hystrix响应超时时间配置（方法上要加上@HystrixCommand，否则无效）
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 2000
